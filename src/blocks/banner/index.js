@@ -4,7 +4,7 @@ import { Button, PanelBody, IconButton, TextControl, SelectControl } from '@word
 
 
 const Banner = () => {
-	registerBlockType('mingjohanson/banner', {
+	registerBlockType('aimhigher/banner', {
 		title: 'Banner',
 		icon: 'align-center',
 		category: 'common',
@@ -31,50 +31,50 @@ const Banner = () => {
 		},
 		edit(props) {
 			let banner = props.attributes.image,
-			styles = {}
-			
-			if(banner) {
-				styles = {'--bannerImage': `url(${banner})` }
+				styles = {}
+
+			if (banner) {
+				styles = { '--bannerImage': `url(${banner})` }
 			}
-			
+
 			return (
 				<div className="banner" id="block-editable-box" style={styles}>
 					<label>Banner Text</label>
 					<TextControl
 						value={props.attributes.text}
-						onChange={(text) => {props.setAttributes({text: text})}}
+						onChange={(text) => { props.setAttributes({ text: text }) }}
 					/>
 					<label>Image</label>
 					<MediaUpload
-						onSelect={(newBanner) => {props.setAttributes({image: newBanner.url})}}
+						onSelect={(newBanner) => { props.setAttributes({ image: newBanner.url }) }}
 						allowedTypes="image"
-						value={ banner == undefined ? 'Select Image' : banner }
-						render={ ( { open } ) => (
-							<Button onClick={ open }>
-								{ banner == undefined ? 'Upload Image' : <img src={ banner } /> }
+						value={banner == undefined ? 'Select Image' : banner}
+						render={({ open }) => (
+							<Button onClick={open}>
+								{banner == undefined ? 'Upload Image' : <img src={banner} />}
 							</Button>
-						) }
+						)}
 					/>
 					<label>CTA Text</label>
 					<TextControl
 						value={props.attributes.cta_text}
-						onChange={(cta_text) => {props.setAttributes({cta_text: cta_text})}}
+						onChange={(cta_text) => { props.setAttributes({ cta_text: cta_text }) }}
 					/>
 					<label>CTA Url</label>
 					<TextControl
 						value={props.attributes.cta_url}
-						onChange={(cta_url) => {props.setAttributes({cta_url: cta_url})}}
+						onChange={(cta_url) => { props.setAttributes({ cta_url: cta_url }) }}
 					/>
 				</div>
 			);
 		},
-	
+
 		save(props) {
 			let banner = props.attributes.image,
-			styles = {}
-			
-			if(banner) {
-				styles = {'--bannerImage': `url(${banner})` }
+				styles = {}
+
+			if (banner) {
+				styles = { '--bannerImage': `url(${banner})` }
 			}
 
 			console.log(props.attributes)

@@ -4,7 +4,7 @@ import { Button, PanelBody, IconButton, TextControl, SelectControl } from '@word
 
 
 const ImageHeader = () => {
-	registerBlockType('mingjohanson/image-header', {
+	registerBlockType('aimhigher/image-header', {
 		title: 'Image Header',
 		icon: 'align-center',
 		category: 'common',
@@ -30,50 +30,50 @@ const ImageHeader = () => {
 		},
 		edit(props) {
 			let banner = props.attributes.image,
-			styles = {}
-			
-			if(banner) {
-				styles = {'--bannerImage': `url(${banner})` }
+				styles = {}
+
+			if (banner) {
+				styles = { '--bannerImage': `url(${banner})` }
 			}
-			
+
 			return (
 				<div className="banner" id="block-editable-box" style={styles}>
 					<label>Header</label>
 					<TextControl
 						value={props.attributes.title}
-						onChange={(text) => {props.setAttributes({title: text})}}
+						onChange={(text) => { props.setAttributes({ title: text }) }}
 					/>
 					<label>Subtitle</label>
 					<TextControl
 						value={props.attributes.subtitle}
-						onChange={(text) => {props.setAttributes({subtitle: text})}}
+						onChange={(text) => { props.setAttributes({ subtitle: text }) }}
 					/>
 					<label>Other Text</label>
 					<TextControl
 						value={props.attributes.other_sub}
-						onChange={(text) => {props.setAttributes({other_sub: text})}}
+						onChange={(text) => { props.setAttributes({ other_sub: text }) }}
 					/>
 					<label>Image</label>
 					<MediaUpload
-						onSelect={(newBanner) => {props.setAttributes({image: newBanner.url})}}
+						onSelect={(newBanner) => { props.setAttributes({ image: newBanner.url }) }}
 						allowedTypes="image"
-						value={ banner == undefined ? 'Select Image' : banner }
-						render={ ( { open } ) => (
-							<Button onClick={ open }>
-								{ banner == undefined ? 'Upload Image' : <img src={ banner } /> }
+						value={banner == undefined ? 'Select Image' : banner}
+						render={({ open }) => (
+							<Button onClick={open}>
+								{banner == undefined ? 'Upload Image' : <img src={banner} />}
 							</Button>
-						) }
+						)}
 					/>
 				</div>
 			);
 		},
-	
+
 		save(props) {
 			let banner = props.attributes.image,
-			styles = {}
-			
-			if(banner) {
-				styles = {'--bannerImage': `url(${banner})` }
+				styles = {}
+
+			if (banner) {
+				styles = { '--bannerImage': `url(${banner})` }
 			}
 
 			return (

@@ -16,7 +16,7 @@ function banner_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/banner', array(
+    register_block_type('aimhigher/banner', array(
         'editor_script' => 'banner/editor-scripts', 
     ));
 }

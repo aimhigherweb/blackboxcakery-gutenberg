@@ -16,7 +16,7 @@ function embed_captions_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/embed-captions', array(
+    register_block_type('aimhigher/embed-captions', array(
         'editor_script' => 'embed_captions/editor-scripts', 
     ));
 }

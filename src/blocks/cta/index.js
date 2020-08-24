@@ -4,7 +4,7 @@ import { ColorPalette, TextControl } from '@wordpress/components';
 
 
 const CTA = () => {
-	registerBlockType('mingjohanson/cta', {
+	registerBlockType('aimhigher/cta', {
 		title: 'Call to Action',
 		icon: 'megaphone',
 		category: 'common',
@@ -69,7 +69,7 @@ const CTA = () => {
 					'--backgroundColour': backgroundColour || '#10bdc8',
 					'--textColour': textColour || '#ffffff'
 				}
-			
+
 			return (
 				<div className="cta" id="block-editable-box" style={styles}>
 					{
@@ -80,18 +80,18 @@ const CTA = () => {
 								colors={colours}
 								value={backgroundColour}
 								disableCustomColors='true'
-								onChange={ (e) => {
-									props.setAttributes({backgroundColour: e})
-								} }
+								onChange={(e) => {
+									props.setAttributes({ backgroundColour: e })
+								}}
 							/>
 							<h3>Text Colour</h3>
 							<ColorPalette
 								colors={colours}
 								value={textColour}
 								disableCustomColors='true'
-								onChange={ (e) => {
-									props.setAttributes({textColour: e})
-								} }
+								onChange={(e) => {
+									props.setAttributes({ textColour: e })
+								}}
 							/>
 						</InspectorControls>
 					}
@@ -101,22 +101,22 @@ const CTA = () => {
 					<label>Text</label>
 					<TextControl
 						value={props.attributes.text}
-						onChange={(text) => {props.setAttributes({text: text})}}
+						onChange={(text) => { props.setAttributes({ text: text }) }}
 					/>
 					<label>CTA Text</label>
 					<TextControl
 						value={props.attributes.cta_text}
-						onChange={(cta_text) => {props.setAttributes({cta_text: cta_text})}}
+						onChange={(cta_text) => { props.setAttributes({ cta_text: cta_text }) }}
 					/>
 					<label>CTA Url</label>
 					<TextControl
 						value={props.attributes.cta_url}
-						onChange={(cta_url) => {props.setAttributes({cta_url: cta_url})}}
+						onChange={(cta_url) => { props.setAttributes({ cta_url: cta_url }) }}
 					/>
 				</div>
 			);
 		},
-	
+
 		save(props) {
 			let backgroundColour = props.attributes.backgroundColour,
 				textColour = props.attributes.textColour,
@@ -127,8 +127,8 @@ const CTA = () => {
 
 			return (
 				<div className="cta" style={styles}>
-         			<p>
-						<span>{props.attributes.text}</span> 
+					<p>
+						<span>{props.attributes.text}</span>
 						<a href={props.attributes.cta_url}>{props.attributes.cta_text}</a>
 					</p>
 				</div>

@@ -17,7 +17,7 @@ function image_container_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/image-container', array(
+    register_block_type('aimhigher/image-container', array(
         'editor_script' => 'image_container/editor-scripts', 
     ));
 }

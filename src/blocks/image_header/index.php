@@ -16,7 +16,7 @@ function image_header_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/image-header', array(
+    register_block_type('aimhigher/image-header', array(
         'editor_script' => 'image_header/editor-scripts', 
     ));
 }

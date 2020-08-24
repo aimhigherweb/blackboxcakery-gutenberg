@@ -16,7 +16,7 @@ function testimonials_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/testimonials', array(
+    register_block_type('aimhigher/testimonials', array(
         'editor_script' => 'testimonials/editor-scripts', 
     ));
 }

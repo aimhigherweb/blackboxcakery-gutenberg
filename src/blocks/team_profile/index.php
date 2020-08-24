@@ -16,7 +16,7 @@ function team_profile_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/team-profile', array(
+    register_block_type('aimhigher/team-profile', array(
         'editor_script' => 'team_profile/editor-scripts', 
     ));
 }

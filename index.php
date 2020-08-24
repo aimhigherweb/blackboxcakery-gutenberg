@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Plugin Name: Ming Johanson Custom Gutenberg Blocks
+ * Plugin Name: Black Box Cakery Custom Gutenberg Blocks
  * Version: 1.0.0
- * Plugin URI: https://github.com/aimhigherweb/mingjohanson-gutenberg-blocks
+ * Plugin URI: https://github.com/aimhigherweb/blackboxcakery-gutenberg
  * Author: AimHigher Web Design
  * Author URI: https://aimhigherweb.design
  *

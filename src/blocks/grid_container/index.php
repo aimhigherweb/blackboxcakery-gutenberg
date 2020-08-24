@@ -17,7 +17,7 @@ function grid_container_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/grid-container', array(
+    register_block_type('aimhigher/grid-container', array(
         'editor_script' => 'grid_container/editor-scripts', 
     ));
 }

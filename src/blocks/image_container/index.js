@@ -3,7 +3,7 @@ import { InnerBlocks, MediaUpload } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 
 const ImageContainer = () => {
-	registerBlockType('mingjohanson/image-container', {
+	registerBlockType('aimhigher/image-container', {
 		title: 'Image Container',
 		icon: 'align-center',
 		category: 'layout',
@@ -15,10 +15,10 @@ const ImageContainer = () => {
 		},
 		edit(props) {
 			let background = props.attributes.background,
-			styles = {}
-			
-			if(background) {
-				styles = {'--backgroundImage': `url(${background})` }
+				styles = {}
+
+			if (background) {
+				styles = { '--backgroundImage': `url(${background})` }
 			}
 
 
@@ -27,36 +27,36 @@ const ImageContainer = () => {
 					<div className="container">
 						<label>Background Image</label>
 						<MediaUpload
-							onSelect={(newBackground) => {props.setAttributes({background: newBackground.url})}}
+							onSelect={(newBackground) => { props.setAttributes({ background: newBackground.url }) }}
 							allowedTypes="image"
-							value={ !background ? 'Select Image' : background }
-							render={ ( { open } ) => (
-								<Button onClick={ open }>
-									{ !background ? 'Upload Image' : 'Change Image' }
+							value={!background ? 'Select Image' : background}
+							render={({ open }) => (
+								<Button onClick={open}>
+									{!background ? 'Upload Image' : 'Change Image'}
 								</Button>
-							) }
+							)}
 						/>
-						<InnerBlocks/>
+						<InnerBlocks />
 					</div>
 				</div>
 			);
 		},
-	
-	save(props) {
-		let background = props.attributes.background,
-			styles = {}
-			
-			if(background) {
-				styles = {'--backgroundImage': `url(${background})` }
+
+		save(props) {
+			let background = props.attributes.background,
+				styles = {}
+
+			if (background) {
+				styles = { '--backgroundImage': `url(${background})` }
 			}
-		
-		return (
-			<div className="image-container" style={styles}>
-				<div className="container">
-					<InnerBlocks.Content/>
+
+			return (
+				<div className="image-container" style={styles}>
+					<div className="container">
+						<InnerBlocks.Content />
+					</div>
 				</div>
-			</div>
-		);
+			);
 
 		},
 	});

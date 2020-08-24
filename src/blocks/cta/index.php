@@ -16,7 +16,7 @@ function cta_register_block() {
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components']
     );
 
-    register_block_type('mingjohanson/cta', array(
+    register_block_type('aimhigher/cta', array(
         'editor_script' => 'cta/editor-scripts', 
     ));
 }
