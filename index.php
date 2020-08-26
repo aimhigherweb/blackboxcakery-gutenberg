@@ -10,7 +10,11 @@
  */
 
 
-	require_once(__DIR__ . '/src/blocks/colour_container/index.php');
+	require_once(__DIR__ . '/src/blocks/testimonials/index.php');
+	require_once(__DIR__ . '/functions/acf.php');
+	require_once(__DIR__ . '/functions/rest.php');
+	require_once(__DIR__ . '/functions/product_fields.php');
+
 
 	add_action( 'enqueue_block_editor_assets', 'aimhigher_gutenberg_styles' );
 
