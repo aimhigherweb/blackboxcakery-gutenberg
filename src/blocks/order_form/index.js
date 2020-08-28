@@ -11,9 +11,109 @@ const OrderForm = () => {
 		icon: 'feedback',
 		category: 'widget',
 		attributes: {
-			attributes: {
+			options: {
 				type: 'array',
-				default: []
+				default: [],
+				source: 'query',
+				selector: 'form .options fieldset',
+				query: {
+					name: {
+						type: 'string',
+						selector: 'legend',
+						source: 'text'
+					},
+					slug: {
+						type: 'string',
+						selector: 'legend',
+						source: 'attribute',
+						attribute: 'data-slug'
+					},
+					terms: {
+						type: 'string',
+						default: [],
+						source: 'query',
+						selector: 'input',
+						query: {
+							name: {
+								type: 'string',
+								source: 'attribute',
+								attribute: 'data-name'
+							},
+							slug: {
+								type: 'string',
+								source: 'attribute',
+								attribute: 'value'
+							},
+							image: {
+								type: 'string',
+								source: 'attribute',
+								attribute: 'data-image'
+							},
+							variation_image: {
+								type: 'string',
+								source: 'attribute',
+								attribute: 'data-variation_image'
+							},
+							description: {
+								type: 'string',
+								source: 'attribute',
+								attribute: 'data-description'
+							}
+						}
+					},
+				}
+			},
+			cakes: {
+				type: 'array',
+				default: [],
+				source: 'query',
+				selector: 'form fieldset.cake-size',
+				query: {
+					name: {
+						type: 'string',
+						selector: 'input',
+						source: 'attribute',
+						attribute: 'data-name'
+					},
+					slug: {
+						type: 'string',
+						selector: 'input',
+						source: 'attribute',
+						attribute: 'value'
+					},
+					price: {
+						type: 'number',
+						selector: 'input',
+						source: 'attribute',
+						attribute: 'data-price'
+					},
+					size: {
+						type: 'string',
+						selector: 'input',
+						source: 'attribute',
+						attribute: 'data-size'
+					},
+				}
+			},
+			description: {
+				type: 'string',
+				selector: '.description.main',
+				source: 'html',
+				multiline: 'p'
+			},
+			gallery: {
+				type: 'array',
+				selector: '.gallery',
+				default: [],
+				source: 'query',
+				query: {
+					image: {
+						type: 'string',
+						source: 'attribute',
+						selector: 'img',
+						attribute: 'src'
+					}
+				}
 			}
 		},
 		edit: class extends Component {
@@ -21,7 +121,8 @@ const OrderForm = () => {
 				super(...arguments)
 				this.props = props
 				this.state = {
-					options: []
+					options: [],
+					cakes: []
 				}
 			}
 
@@ -34,12 +135,82 @@ const OrderForm = () => {
 					queryStringAuth: true
 				});
 
+				WooCommerce.get('products').then(res => {
+					let { cakes, gallery, description } = this.props.attributes
+
+					console.log(res.data)
+
+					res.data.forEach(opt => {
+						cakes.push({
+							...opt,
+							size: opt.acf.size
+						})
+
+						opt.images.forEach(img => {
+							let added = false
+
+							gallery.some(galImg => {
+								if (galImg.image == img.src) {
+									added = true
+									return true
+								}
+							})
+
+							if (!added) {
+
+								if (RegExp(/(\d)+x(\d)+.jpg$/).test(img.src)) {
+									return
+								}
+
+								gallery.push({
+									image: img.src
+								})
+							}
+						})
+
+						if (opt.slug == 'cake-large') {
+							description = opt.short_description
+						}
+					})
+
+					this.setState({
+						cakes
+					})
+
+					this.props.setAttributes({
+						cakes,
+						description,
+						gallery
+					})
+				})
+
 				WooCommerce.get('products/attributes').then(res => {
-					const options = this.state.options
+					const options = this.props.attributes.options
 
 					res.data.forEach(att => {
 						apiFetch({ path: `/bbc/v1/attributes/${att.slug}` }).then(terms => {
-							options.push({ ...att, terms })
+							const termItems = []
+							let optExists = false
+
+							terms.forEach(term => {
+								termItems.push({
+									...term,
+									image: term.image.sizes.shop_thumbnail,
+									variation_image: term.variation_image.sizes.medium_large
+								})
+							})
+
+							options.some(opt => {
+								if (opt.slug == att.slug) {
+									opt = { ...att, terms: termItems }
+									optExists = true
+									return true
+								}
+							})
+
+							if (!optExists) {
+								options.push({ ...att, terms: termItems })
+							}
 						})
 					})
 
@@ -54,10 +225,10 @@ const OrderForm = () => {
 			}
 
 			render() {
+				console.log(this.props.attributes.gallery)
 				return (
 					<div className="order-form" id="block-editable-box">
 						<h1>Order Form</h1>
-						{/* <pre>{JSON.stringify(this.state.options)}</pre> */}
 						<ul>
 							{this.state.options.map(opt => (
 								<li>
@@ -66,7 +237,7 @@ const OrderForm = () => {
 										{opt.terms.map(term => (
 											<li>
 												{term.name}
-												<img src={term.image.sizes.thumbnail} />
+												<img src={term.image} />
 											</li>
 										))}
 									</ul>
@@ -79,68 +250,107 @@ const OrderForm = () => {
 			}
 		},
 		save(props) {
+			const { options, cakes, gallery, description } = props.attributes
+
+			options.sort((a, b) => {
+				if (a.slug < b.slug) {
+					return false
+				}
+				return true
+			})
+
 			return (
 				<div className="order-form">
 					<div>
-						<div>Gallery</div>
-
-						<p className="price"><span><span>$</span>150</span></p>
-
-						<div className="description">
-							<p>Description</p>
-							<div className="flavour description">
-								<p>Flavour descriptions</p>
-							</div>
+						<div className="gallery">
+							{gallery.map(img => (
+								<img src={img.image.replace('.jpg', '-600x375.jpg')} />
+							))}
 						</div>
 
+						<div className="description main" dangerouslySetInnerHTML={{ __html: description }} />
+						<div className="description pa_flavours"></div>
+						<div className="description pa_themes"></div>
 
-						<form className="cart" action="https://blackboxcakery.com.au/shop/cakes/" method="post" enctype="multipart/form-data">
-							<legend>Flavours</legend>
-							<fieldset>
-								<input name="flavours" id="" value="choc-caramel" type="radio" />
-								<label for="">Choc-Caramel</label>
+						<form className="cake-order" action="/shop/cake-large/" method="post">
+							<fieldset className="cake-size">
+								<div>
+									<legend>Cake Size</legend>
+									{cakes.map(opt => (
+										<>
+											<input
+												name="cake_size"
+												id={`cake-size_${opt.slug}`}
+												value={opt.slug}
+												type="radio"
+												onClick={`changeCakeSize({id: this.value, price: ${opt.price}})`}
+												data-name={opt.name}
+												data-price={opt.price}
+												data-size={opt.size}
+											/>
+											<label htmlFor={`cake-size_${opt.slug}`}>{opt.name}</label></>
+									))}
+								</div>
 							</fieldset>
 
-							<legend>Flavours</legend>
+							<div className="options">
+								{options.map(opt => (
+									<fieldset className={opt.slug}>
+										<div>
+											<legend data-slug={opt.slug}>{opt.name}</legend>
+											{opt.terms.map(term => (
+												<>
+													<input
+														name={opt.slug}
+														id={`${opt.slug}-${term.slug}`}
+														value={term.slug}
+														type="radio"
+														data-name={term.name}
+														data-variation_image={term.variation_image}
+														data-image={term.image}
+														data-description={term.description}
+													/>
+													<label
+														htmlFor={`${opt.slug}-${term.slug}`}
+														style={{ backgroundImage: `url(${term.image})` }}
+													>
+														<span>{term.name}</span>
+													</label>
+												</>
+											))}
+										</div>
+									</fieldset>
+								))}
+							</div>
+
 							<fieldset>
-								<input name="decorations" id="" value="confectionary" type="radio" />
-								<label for="">Confectionary</label>
+								<div>
+									<legend>Gluten Free?</legend>
+									<input type="radio" id="custom_add_gluten_free_yes" value="yes" name="custom_add_gluten_free" />
+									<label for="custom_add_gluten_free_yes">Yes</label>
+									<input type="radio" id="custom_add_gluten_free_no" value="no" name="custom_add_gluten_free" checked />
+									<label for="custom_add_gluten_free_yes">No</label>
+								</div>
 							</fieldset>
 
-							<legend>Cake Size</legend>
-							<fieldset>
-								<input name="size" id="" value="small" type="radio" />
-								<label for="">Small</label>
-							</fieldset>
+							<label htmlFor="custom_add_allergies">Are there any allergies we need to be aware of?</label>
+							<input type="text" id="custom_add_allergies" name="custom_add_allergies" />
 
-							<legend>Gluten Free</legend>
-							<fieldset>
-								<input name="gluten" id="" value="small" type="checkbox" />
-								<label for="">Gluten Free</label>
-							</fieldset>
+							<label htmlFor="custom_add_occasion">What's the Occasion?</label>
+							<input type="text" placeholder="Birthday, Anniversay, Tuesday, etc" name="custom_add_occasion" />
 
-							<label>Are there any allergies we need to be aware of?</label>
-							<input type="text" />
+							<label for="custom_add_colour">Incorporate a favourite colour?</label>
+							<input type="text" id="custom_add_colour" name="custom_add_colour" />
 
-							<label>What's the Occasion?</label>
-							<input type="text" placeholder="Birthday, Anniversay, Tuesday, etc" />
-
-							<label>Incorporate a favourite colour?</label>
-							<input type="text" />
-
-							<label>Message for Gift Tag</label>
-							<input type="text" />
+							<label for="custom_add_message">Message for gift tag</label>
+							<textarea id="custom_add_message" name="custom_add_message"></textarea>
 
 							<dl>
-								<dt>Product Price:</dt>
-								<dd>$<span>0.00</span></dd>
-								<dt>Options Price:</dt>
-								<dd>$<span>0.00</span></dd>
-								<dt>Total:</dt>
-								<dd>$<span>0.00</span></dd>
+								<dt>Price:</dt>
+								<dd>$<span className="product-price">Select a cake size to view the price</span></dd>
 							</dl>
 
-							<button type="submit" name="add-to-cart" value="49" className="single_add_to_cart_button button alt">Add to cart</button>
+							<button type="submit">Order Cake</button>
 
 						</form>
 
