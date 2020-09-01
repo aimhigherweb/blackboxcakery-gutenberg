@@ -12,10 +12,10 @@ function custom_attributes_route($data) {
 	$acf = [];
 
 	foreach ($attributes as $att) {		
-		// $value = $att;
-		$id = 'pa_flavours_' . $att->term_taxonomy_id;
+		$id = $data['id'] . '_' . $att->term_taxonomy_id;
 		$att->image = get_field('image', $id);
 		$att->variation_image = get_field('variation_image', $id);
+		$att->gluten_free = get_field('gluten_free', $id);
 
 		array_push($acf, $att);
 	};

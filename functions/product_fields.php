@@ -20,25 +20,31 @@ function aimhigher_product_add_on() {
             echo '<fieldset class="' . $att . ' ' . $selected_field . '"><div><legend>' . wc_attribute_label($att) . '</legend>';
 
             foreach ($terms as $term):
-                $id = 'pa_flavours_' . $term->term_taxonomy_id;
+                $id = $att . '_' . $term->term_taxonomy_id;
                 $term->image = get_field('image', $id);
                 $term->variation_image = get_field('variation_image', $id);
+                $term->gluten_free = get_field('gluten_free', $id) ? 'true' : 'false';
                 $selected = '';
 
                 if($term->slug == $selected_option) {
                     $selected = 'checked';
                 }
-
             ?>
                 <input 
-                    name="<?php echo $term->slug; ?>" 
-                    id="pa_flavours-<?php echo $term->slug; ?>" 
-                    value="<?php echo $term->slug; ?>" 
+                    name="<?php echo $att ?>" 
+                    id="<?php echo $id ?>" 
+                    value="<?php echo $term->name; ?>" 
                     type="radio" 
+                    onClick="changeFlavour(this)"
+                    data-name="<?php echo $term->name; ?>" 
+                    data-variation_image="<?php echo $term->variation_image['sizes']['medium_large']; ?>"
+                    data-description="<?php echo $term->description; ?>"
+                    data-gf="<?php echo $term->gluten_free; ?>"
                     <?php echo $selected; ?>
                 />
                 <label 
-                    htmlFor="pa_flavours-<?php echo $term->slug; ?>"
+                    htmlFor="<?php echo $id ?>"
+                    style="background-image: url(<?php echo $term->image['sizes']['thumbnail']; ?>)"
                 >
                     <?php echo $term->name; ?>
                 </label>
@@ -67,7 +73,7 @@ function aimhigher_product_add_on() {
             }
         }
     ?>
-        <fieldset class="<?php echo $custom_add_gluten_free_set; ?>">
+        <fieldset class="<?php echo $custom_add_gluten_free_set; ?> gluten">
             <div>
                 <legend>Gluten Free?</legend>
                 <input 
@@ -161,15 +167,19 @@ function aimhigher_product_add_on() {
 // -----------------------------------------
 // 2. Throw error if custom input field empty
  
-// add_filter( 'woocommerce_add_to_cart_validation', 'aimhigher_product_add_on_validation', 10, 3 );
+add_filter( 'woocommerce_add_to_cart_validation', 'aimhigher_product_add_on_validation', 10, 3 );
  
-// function aimhigher_product_add_on_validation( $passed, $product_id, $qty ){
-//    if( isset( $_POST['custom_add_occasion'] ) && sanitize_text_field( $_POST['custom_add_occasion'] ) == '' ) {
-//       wc_add_notice( 'Custom Text Add-On is a required field', 'error' );
-//       $passed = false;
-//    }
-//    return $passed;
-// }
+function aimhigher_product_add_on_validation( $passed, $product_id, $qty ){
+   if( isset( $_POST['pa_flavours'] ) == '' ) {
+      wc_add_notice( 'You need to select what flavour of cake you want', 'error' );
+      $passed = false;
+   }
+   if( isset( $_POST['pa_theme'] ) == '' ) {
+        wc_add_notice( 'You need to select what theme you want your cake to be decorated with', 'error' );
+        $passed = false;
+    }
+   return $passed;
+}
  
 // -----------------------------------------
 // 3. Save custom input field value into cart item data
@@ -177,6 +187,16 @@ function aimhigher_product_add_on() {
 add_filter( 'woocommerce_add_cart_item_data', 'aimhigher_product_add_on_cart_item_data', 10, 2 );
  
 function aimhigher_product_add_on_cart_item_data( $cart_item, $product_id ){
+    // Flavour - pa_flavours
+    if( isset( $_POST['pa_flavours'] ) ) {
+        $cart_item['pa_flavours'] = $_POST['pa_flavours'];
+    }
+    
+    // Theme - pa_theme
+    if( isset( $_POST['pa_theme'] ) ) {
+        $cart_item['pa_theme'] = $_POST['pa_theme'];
+	}
+    
     // Gluten Free - custom_add_gluten_free
     if( isset( $_POST['custom_add_gluten_free'] ) ) {
         if($_POST['custom_add_gluten_free'] == 'custom_add_gluten_free_yes' || $_POST['custom_add_gluten_free'] == 'yes') {
@@ -213,6 +233,22 @@ function aimhigher_product_add_on_cart_item_data( $cart_item, $product_id ){
 add_filter( 'woocommerce_get_item_data', 'aimhigher_product_add_on_display_cart', 10, 2 );
  
 function aimhigher_product_add_on_display_cart( $data, $cart_item ) {
+    // Flavour - pa_flavours
+    if ( isset( $cart_item['pa_flavours'] ) ){
+        $data[] = array(
+            'name' => 'Flavour',
+            'value' => $cart_item['pa_flavours']
+        );
+    }
+    
+    // Theme - pa_theme
+    if ( isset( $cart_item['pa_theme'] ) ){
+        $data[] = array(
+            'name' => 'Theme',
+            'value' => $cart_item['pa_theme']
+        );
+    }
+    
     // Gluten Free - custom_add_gluten_free
     if ( isset( $cart_item['custom_add_gluten_free'] ) ){
         $data[] = array(
@@ -263,6 +299,16 @@ function aimhigher_product_add_on_display_cart( $data, $cart_item ) {
 add_action( 'woocommerce_add_order_item_meta', 'aimhigher_product_add_on_order_item_meta', 10, 2 );
  
 function aimhigher_product_add_on_order_item_meta( $item_id, $values ) {
+    // Flavour - pa_flavours
+    if ( ! empty( $values['pa_flavours'] ) ) {
+        wc_add_order_item_meta( $item_id, 'Flavour', $values['pa_flavours'], true );
+    }
+    
+    // Theme - pa_theme
+    if ( ! empty( $values['pa_theme'] ) ) {
+        wc_add_order_item_meta( $item_id, 'Theme', $values['pa_theme'], true );
+    }
+
     // Gluten Free - custom_add_gluten_free
     if ( ! empty( $values['custom_add_gluten_free'] ) ) {
         wc_add_order_item_meta( $item_id, 'Gluten Free', $values['custom_add_gluten_free'], true );
@@ -295,6 +341,16 @@ function aimhigher_product_add_on_order_item_meta( $item_id, $values ) {
 add_filter( 'woocommerce_order_item_product', 'aimhigher_product_add_on_display_order', 10, 2 );
  
 function aimhigher_product_add_on_display_order( $cart_item, $order_item ){
+    // Flavour - pa_flavours
+    if( isset( $order_item['pa_flavours'] ) ){
+        $cart_item['pa_flavours'] = $order_item['pa_flavours'];
+    }
+    
+    // Theme - pa_theme
+    if( isset( $order_item['pa_theme'] ) ){
+        $cart_item['pa_theme'] = $order_item['pa_theme'];
+    }
+
     // Gluten Free - custom_add_gluten_free
     if( isset( $order_item['custom_add_gluten_free'] ) ){
         $cart_item['custom_add_gluten_free'] = $order_item['custom_add_gluten_free'];
@@ -330,19 +386,26 @@ function aimhigher_product_add_on_display_order( $cart_item, $order_item ){
 add_filter( 'woocommerce_email_order_meta_fields', 'aimhigher_product_add_on_display_emails' );
  
 function aimhigher_product_add_on_display_emails( $fields ) { 
+    // Flavour - pa_flavours
+    $fields['pa_flavours'] = 'Flavour';
+    
+    // Theme - pa_theme
+    $fields['pa_theme'] = 'Theme';
+
     // Gluten Free - custom_add_gluten_free
+    $fields['custom_add_gluten_free'] = 'Gluten Free';
 
     // Allergies - custom_add_allergies
+    $fields['custom_add_allergies'] = 'Allergies';
 
     // Occasion - custom_add_occasion
+    $fields['custom_add_occasion'] = 'Occasion';
     
     // Colour - custom_add_colour
+    $fields['custom_add_colour'] = 'Colour';
 
     // Message - custom_add_message
-
-	$fields['custom_add_occasion'] = 'Occasion';
-	
-	$fields['custom_add_gluten_free'] = 'Gluten Free';
+    $fields['custom_add_message'] = 'Message';
 
     return $fields; 
 }
