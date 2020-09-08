@@ -43,7 +43,7 @@ function aimhigher_product_add_on() {
                     <?php echo $selected; ?>
                 />
                 <label 
-                    htmlFor="<?php echo $id ?>"
+                    for="<?php echo $id ?>"
                     style="background-image: url(<?php echo $term->image['sizes']['thumbnail']; ?>)"
                 >
                     <?php echo $term->name; ?>

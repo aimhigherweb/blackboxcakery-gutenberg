@@ -257,8 +257,6 @@ const OrderForm = () => {
 			render() {
 				return (
 					<div className="order-form" id="block-editable-box">
-						<button onClick={() => { this.triggerUpdate() }}>Update Order Form Details</button>
-						<h2>Order Details</h2>
 						<ul>
 							{this.state.options.map(opt => (
 								<li>
@@ -288,10 +286,7 @@ const OrderForm = () => {
 				);
 			}
 		},
-		save(props) {
-			console.log({ save: props.attributes.options })
-			return <Form {...props.attributes} />
-		},
+		save(props) { return },
 	});
 }
 

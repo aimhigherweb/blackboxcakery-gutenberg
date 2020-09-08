@@ -1,18 +1,18 @@
 const Form = ({ options, cakes, gallery, description }) => {
-	options.sort((a, b) => {
-		if (a.slug < b.slug) {
-			return false
-		}
-		return true
-	})
+	// options.sort((a, b) => {
+	// 	if (a.slug < b.slug) {
+	// 		return false
+	// 	}
+	// 	return true
+	// })
 
 	return (
 		<div className="order-form">
-			<div className="gallery">
+			{/* <div className="gallery">
 				{gallery.map(img => (
 					<img src={img.image} />
 				))}
-			</div>
+			</div> */}
 
 			<div className="description main" dangerouslySetInnerHTML={{ __html: description }} />
 			<div className="description pa_flavours"></div>
@@ -30,16 +30,16 @@ const Form = ({ options, cakes, gallery, description }) => {
 									value={opt.slug}
 									type="radio"
 									onClick={`changeCakeSize({id: this.value, price: ${opt.price}})`}
-									data-name={opt.name}
+									data-name={opt.title.raw}
 									data-price={opt.price}
-									data-size={opt.size}
+									data-size={opt.acf.size}
 								/>
-								<label htmlFor={`cake-size_${opt.slug}`}>{opt.name}</label></>
+								<label htmlFor={`cake-size_${opt.slug}`}>{opt.title.raw}</label></>
 						))}
 					</div>
 				</fieldset>
 
-				<div className="options">
+				{/* <div className="options">
 					{options.map(opt => (
 						<fieldset className={opt.slug}>
 							<div>
@@ -69,7 +69,7 @@ const Form = ({ options, cakes, gallery, description }) => {
 							</div>
 						</fieldset>
 					))}
-				</div>
+				</div> */}
 
 				<fieldset class="message hidden">
 					<label for="custom_theme_message">What message would you like on the cake?</label>
