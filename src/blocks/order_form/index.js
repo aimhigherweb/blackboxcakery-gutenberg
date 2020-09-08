@@ -127,7 +127,16 @@ const OrderForm = () => {
 				}
 			}
 
-			componentDidMount() {
+			triggerUpdate() {
+				this.updateDetails()
+
+				this.props.setAttributes({
+					cakes: this.state.cakes,
+					options: this.state.options,
+				})
+			}
+
+			updateDetails() {
 				const WooCommerce = new WooCommerceRestApi({
 					url: process.env.WP_URL,
 					consumerKey: process.env.WC_KEY,
@@ -136,11 +145,11 @@ const OrderForm = () => {
 					queryStringAuth: true
 				});
 
-				WooCommerce.get('products').then(res => {
+				WooCommerce.get('products').then(async res => {
 					let { cakes, gallery, description } = this.props.attributes
 
 
-					res.data.forEach(opt => {
+					await res.data.forEach(opt => {
 						let optExists = false
 
 						cakes.some((cake, index) => {
@@ -184,25 +193,26 @@ const OrderForm = () => {
 						})
 
 						if (opt.slug == 'cake-large') {
-							description = opt.short_description
+							description = opt.short_description.replace('<div class="description main">', '').replace('</div><div class="description pa_flavours"></div><div class="description pa_themes"></div></div>', '')
 						}
+
 					})
 
-					this.setState({
+					await this.setState({
 						cakes
 					})
 
-					this.props.setAttributes({
+					await this.props.setAttributes({
 						cakes,
 						description,
 						gallery
 					})
 				})
 
-				WooCommerce.get('products/attributes').then(res => {
+				WooCommerce.get('products/attributes').then(async res => {
 					const options = this.props.attributes.options
 
-					res.data.forEach(att => {
+					await res.data.forEach(att => {
 						apiFetch({ path: `/bbc/v1/attributes/${att.slug}` }).then(terms => {
 							const termItems = []
 							let optExists = false
@@ -229,20 +239,26 @@ const OrderForm = () => {
 						})
 					})
 
-					this.setState({
+					await this.setState({
 						options
 					})
 
-					this.props.setAttributes({
+					await this.props.setAttributes({
 						options
 					})
 				})
 			}
 
+			componentDidMount() {
+				console.log(this)
+				this.updateDetails()
+			}
+
 			render() {
 				return (
 					<div className="order-form" id="block-editable-box">
-						<h1>Order Form</h1>
+						<button onClick={() => { this.triggerUpdate() }}>Update Order Form Details</button>
+						<h2>Order Details</h2>
 						<ul>
 							{this.state.options.map(opt => (
 								<li>
@@ -251,19 +267,29 @@ const OrderForm = () => {
 										{opt.terms.map(term => (
 											<li>
 												{term.name}
-												<img src={term.image} />
 											</li>
 										))}
 									</ul>
 								</li>
 
 							))}
+							<li>
+								Sizes
+								<ul>
+									{this.state.cakes.map(cake => (
+										<li>
+											{cake.name}
+										</li>
+									))}
+								</ul>
+							</li>
 						</ul>
 					</div>
 				);
 			}
 		},
 		save(props) {
+			console.log({ save: props.attributes.options })
 			return <Form {...props.attributes} />
 		},
 	});

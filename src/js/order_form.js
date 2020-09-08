@@ -50,9 +50,6 @@ const changeFlavour = (e) => {
 		if (document.querySelector('.description.pa_flavours')) {
 			document.querySelector('.description.pa_flavours').innerHTML = `<h2>${e.getAttribute('data-name')}</h2><p>${e.getAttribute('data-description')}</p>`
 		}
-		else if (document.querySelector('.description.flavour')) {
-			document.querySelector('.description.flavour').innerHTML = `<h2>${e.getAttribute('data-name')}</h2><p>${e.getAttribute('data-description')}</p>`
-		}
 
 
 	}

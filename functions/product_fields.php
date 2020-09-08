@@ -57,7 +57,23 @@ function aimhigher_product_add_on() {
 
         
 
-        // var_dump($attributes);
+    // Message - custom_theme_message
+        $custom_theme_message = isset( $_POST['custom_theme_message'] ) ? sanitize_text_field( $_POST['custom_theme_message'] ) : '';
+        $custom_theme_message_set = isset( $_POST['custom_theme_message'] ) ? 'filled' : '';
+        $custom_theme_message_hidden = isset( $_POST['pa_theme'] ) == 'message' ? '' : 'hidden';
+    ?>
+
+        <fieldset class="message hidden <?php echo $custom_theme_message_set . ' ' . $custom_theme_message_hidden; ?>">
+            <label for="custom_theme_message">What message would you like on the cake?</label>
+            <input 
+                type="text" 
+                id="custom_theme_message" 
+                name="custom_theme_message" 
+                value="<?php echo $custom_theme_message; ?> "
+            />
+        </fieldset>
+
+    <?php
 
     // Gluten Free - custom_add_gluten_free
         $custom_add_gluten_free_yes = '';
@@ -115,7 +131,7 @@ function aimhigher_product_add_on() {
     
     // Occasion - custom_add_occasion
         $custom_add_occasion = isset( $_POST['custom_add_occasion'] ) ? sanitize_text_field( $_POST['custom_add_occasion'] ) : '';
-        $custom_add_occasion_set = isset( $_POST['custom_add_allergies'] ) ? 'filled' : '';
+        $custom_add_occasion_set = isset( $_POST['custom_add_occasion'] ) ? 'filled' : '';
     ?>
     
         <label for="custom_add_occasion">What's the Occasion?</label>
@@ -132,7 +148,7 @@ function aimhigher_product_add_on() {
     
     // Colour - custom_add_colour
         $custom_add_colour = isset( $_POST['custom_add_colour'] ) ? sanitize_text_field( $_POST['custom_add_colour'] ) : '';
-        $custom_add_colour_set = isset( $_POST['custom_add_allergies'] ) ? 'filled' : '';
+        $custom_add_colour_set = isset( $_POST['custom_add_colour'] ) ? 'filled' : '';
 	?>
     
         <label for="custom_add_colour">Incorporate a favourite colour?</label>
@@ -148,7 +164,7 @@ function aimhigher_product_add_on() {
 
     // Message - custom_add_message
         $custom_add_message = isset( $_POST['custom_add_message'] ) ? sanitize_text_field( $_POST['custom_add_message'] ) : '';
-        $custom_add_message_set = isset( $_POST['custom_add_allergies'] ) ? 'filled' : '';
+        $custom_add_message_set = isset( $_POST['custom_add_message'] ) ? 'filled' : '';
 	?>
     
         <label for="custom_add_message">Message for gift tag</label>
@@ -178,6 +194,10 @@ function aimhigher_product_add_on_validation( $passed, $product_id, $qty ){
         wc_add_notice( 'You need to select what theme you want your cake to be decorated with', 'error' );
         $passed = false;
     }
+    if( isset( $_POST['pa_theme'] ) == 'message'  && isset( $_POST['custom_theme_message']) == '') {
+        wc_add_notice( 'You need to let us know what message you want on the cake', 'error' );
+        $passed = false;
+    }
    return $passed;
 }
  
@@ -195,6 +215,11 @@ function aimhigher_product_add_on_cart_item_data( $cart_item, $product_id ){
     // Theme - pa_theme
     if( isset( $_POST['pa_theme'] ) ) {
         $cart_item['pa_theme'] = $_POST['pa_theme'];
+    }
+    
+    // Message - custom_theme_message
+    if( isset( $_POST['custom_theme_message'] ) ) {
+        $cart_item['custom_theme_message'] = sanitize_text_field( $_POST['custom_theme_message'] );
 	}
     
     // Gluten Free - custom_add_gluten_free
@@ -248,6 +273,14 @@ function aimhigher_product_add_on_display_cart( $data, $cart_item ) {
             'value' => $cart_item['pa_theme']
         );
     }
+
+    // Message - custom_theme_message
+    if ( isset( $cart_item['custom_theme_message'] ) ){
+        $data[] = array(
+            'name' => 'Cake Message',
+            'value' => sanitize_text_field( $cart_item['custom_theme_message'] )
+        );
+	}
     
     // Gluten Free - custom_add_gluten_free
     if ( isset( $cart_item['custom_add_gluten_free'] ) ){
@@ -284,7 +317,7 @@ function aimhigher_product_add_on_display_cart( $data, $cart_item ) {
     // Message - custom_add_message
     if ( isset( $cart_item['custom_add_message'] ) ){
         $data[] = array(
-            'name' => 'Message',
+            'name' => 'Card Message',
             'value' => sanitize_text_field( $cart_item['custom_add_message'] )
         );
 	}
@@ -309,6 +342,11 @@ function aimhigher_product_add_on_order_item_meta( $item_id, $values ) {
         wc_add_order_item_meta( $item_id, 'Theme', $values['pa_theme'], true );
     }
 
+    // Message - custom_theme_message
+    if ( ! empty( $values['custom_theme_message'] ) ) {
+        wc_add_order_item_meta( $item_id, 'Cake Message', $values['custom_theme_message'], true );
+	}
+
     // Gluten Free - custom_add_gluten_free
     if ( ! empty( $values['custom_add_gluten_free'] ) ) {
         wc_add_order_item_meta( $item_id, 'Gluten Free', $values['custom_add_gluten_free'], true );
@@ -331,7 +369,7 @@ function aimhigher_product_add_on_order_item_meta( $item_id, $values ) {
 
     // Message - custom_add_message
     if ( ! empty( $values['custom_add_message'] ) ) {
-        wc_add_order_item_meta( $item_id, 'Message', $values['custom_add_message'], true );
+        wc_add_order_item_meta( $item_id, 'Card Message', $values['custom_add_message'], true );
 	}
 }
  
@@ -350,6 +388,11 @@ function aimhigher_product_add_on_display_order( $cart_item, $order_item ){
     if( isset( $order_item['pa_theme'] ) ){
         $cart_item['pa_theme'] = $order_item['pa_theme'];
     }
+
+    // Message - custom_theme_message
+    if( isset( $order_item['custom_theme_message'] ) ){
+        $cart_item['custom_theme_message'] = $order_item['custom_theme_message'];
+	}
 
     // Gluten Free - custom_add_gluten_free
     if( isset( $order_item['custom_add_gluten_free'] ) ){
@@ -392,6 +435,9 @@ function aimhigher_product_add_on_display_emails( $fields ) {
     // Theme - pa_theme
     $fields['pa_theme'] = 'Theme';
 
+    // Message - custom_theme_message
+    $fields['custom_theme_message'] = 'Cake Message';
+
     // Gluten Free - custom_add_gluten_free
     $fields['custom_add_gluten_free'] = 'Gluten Free';
 
@@ -405,7 +451,7 @@ function aimhigher_product_add_on_display_emails( $fields ) {
     $fields['custom_add_colour'] = 'Colour';
 
     // Message - custom_add_message
-    $fields['custom_add_message'] = 'Message';
+    $fields['custom_add_message'] = 'Card Message';
 
     return $fields; 
 }
