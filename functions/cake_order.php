@@ -1,11 +1,14 @@
 <?php
+	// Create Shortcode
+  function bbc_order_form() {
+	ob_start();
 
-// add_action('admin_post_add_cake', 'prefix_admin_add_cake');
-// add_action('admin_post_nopriv_add_cake', 'prefix_admin_add_cake');
+	include( plugin_dir_path( __FILE__ ) . '../src/blocks/order_form/form.php');
 
-// function prefix_admin_add_cake() {
-// 	wp_redirect('/cart/?add-to-cart=' . '1307' . '&code=test');
-// 	exit;
-// }
+	$content = ob_get_clean();
 
+	return $content;
+  }
+
+  add_shortcode('order_form', 'bbc_order_form');
 ?>

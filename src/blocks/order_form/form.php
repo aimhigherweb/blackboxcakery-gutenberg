@@ -38,7 +38,7 @@
 		<?php
 		
 		foreach($gallery as $img) {
-			echo wp_get_attachment_image($img, 'cake_image');
+			echo '<img src="' . wp_get_attachment_image_src($img, 'cake_image')[0] . '" />';
 		}
 		
 		?>
@@ -46,7 +46,7 @@
 
 	<div class="description main"><?php echo $description; ?></div>
 	<div class="description pa_flavours"></div>
-	<div class="description pa_themes"></div>
+	<div class="description pa_decorations"></div>
 
 	<form class="cake-order" action="/shop/cake-large/" method="post">
 		<fieldset class="cake-size">
@@ -67,7 +67,7 @@
 						data-name="<?php echo $cake->name ?>" 
 						
 					/>
-					<label for="<?php echo $id ?>"><?php echo $cake->name; ?> <small class="size"><?php echo $size ?></small></label></>
+					<label for="<?php echo $id ?>"><?php echo $cake->name; ?> <small class="size">(<?php echo $size ?>)</small></label>
 
 				<? endforeach; ?>
 			</div>
@@ -88,7 +88,7 @@
 
 				<fieldset class="<?php echo $slug;?>">
 					<div>
-						<legend><?php echo $name;?></legend>
+						<legend>Choose Your <?php echo $name;?></legend>
 						<?php
 							foreach ($terms as $term):
 								$id = $slug . '_' . $term->term_taxonomy_id;
@@ -112,7 +112,7 @@
 									for="<?php echo $id ?>"
 									style="background-image: url(<?php echo $term->image['sizes']['thumbnail']; ?>)"
 								>
-									<?php echo $term->name; ?>
+									<span><?php echo $term->name; ?></span>
 								</label>
 							<?php endforeach; ?>
 					</div>
@@ -124,16 +124,18 @@
 		</div>
 
 		<fieldset class="message hidden">
-			<label for="custom_theme_message">What message would you like on the cake?</label>
-			<input type="text" id="custom_theme_message" name="custom_theme_message" />
+			<div class="block">
+				<label for="custom_theme_message">What message would you like on the cake?</label>
+				<input type="text" id="custom_theme_message" name="custom_theme_message" disabled />
+			</div>
 		</fieldset>
 
 		<fieldset class="gluten hidden">
 			<div>
 				<legend>Gluten Free?</legend>
-				<input type="radio" id="custom_add_gluten_free_yes" value="yes" name="custom_add_gluten_free" />
+				<input type="radio" id="custom_add_gluten_free_yes" value="yes" name="custom_add_gluten_free" disabled />
 				<label for="custom_add_gluten_free_yes">Yes</label>
-				<input type="radio" id="custom_add_gluten_free_no" value="no" name="custom_add_gluten_free" checked />
+				<input type="radio" id="custom_add_gluten_free_no" value="no" name="custom_add_gluten_free" disabled checked />
 				<label for="custom_add_gluten_free_yes">No</label>
 			</div>
 		</fieldset>
@@ -152,7 +154,7 @@
 
 		<dl>
 			<dt>Price:</dt>
-			<dd>$<span class="product-price">Select a cake size to view the price</span></dd>
+			<dd class="product-price">$<span>Select a cake size to view the price</span></dd>
 		</dl>
 
 		<button type="submit" disabled>Order Cake</button>

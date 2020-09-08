@@ -16,7 +16,7 @@ const Form = ({ options, cakes, gallery, description }) => {
 
 			<div className="description main" dangerouslySetInnerHTML={{ __html: description }} />
 			<div className="description pa_flavours"></div>
-			<div className="description pa_themes"></div>
+			<div className="description pa_decorations"></div>
 
 			<form className="cake-order" action="/shop/cake-large/" method="post">
 				<fieldset className="cake-size">

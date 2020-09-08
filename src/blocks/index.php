@@ -23,15 +23,6 @@ function aimhigher_register_block() {
     register_block_type('aimhigher/testimonials', array(
         'editor_script' => 'aimhigher/editor-scripts', 
     ));
-
-    register_block_type('aimhigher/order-form', array(
-        'editor_script' => 'aimhigher/editor-scripts', 
-        'render_callback' => 'order_form_dynamic_render_callback'
-    ));
-
-    function order_form_dynamic_render_callback() {
-        return include( plugin_dir_path( __FILE__ ) . 'order_form/form.php');
-    }
 }
 
 // Hook the enqueue functions into the editor

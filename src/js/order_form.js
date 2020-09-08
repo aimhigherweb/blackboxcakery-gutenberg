@@ -1,7 +1,7 @@
 const changeCakeSize = (e) => {
 	document.querySelector('form.cake-order').setAttribute('action', `/shop/${e.id}`)
 
-	document.querySelector('.product-price').innerHTML = e.price
+	document.querySelector('.product-price span').innerHTML = e.price
 
 	document.querySelector('form button[type="submit"]').disabled = false
 }
@@ -18,9 +18,17 @@ const changeFlavour = (e) => {
 		const gfField = document.querySelector('fieldset.gluten')
 		if (e.getAttribute('data-gf') == 'true') {
 			gfField.classList.remove('hidden')
+
+			gfField.querySelectorAll('input').forEach(input => {
+				input.disabled = false
+			})
 		}
 		else if (!gfField.classList.contains('hidden')) {
 			gfField.classList.add('hidden')
+
+			gfField.querySelectorAll('input').forEach(input => {
+				input.disabled = true
+			})
 		}
 
 		// Change Featured Gallery image to selected flavour
@@ -50,7 +58,23 @@ const changeFlavour = (e) => {
 		if (document.querySelector('.description.pa_flavours')) {
 			document.querySelector('.description.pa_flavours').innerHTML = `<h2>${e.getAttribute('data-name')}</h2><p>${e.getAttribute('data-description')}</p>`
 		}
+	}
+	else if (e.name == 'pa_decorations') {
+		const messageField = document.querySelector('fieldset.message')
 
+		if (e.value == 'message') {
+			messageField.classList.remove('hidden')
 
+			messageField.querySelectorAll('input').forEach(input => {
+				input.disabled = false
+			})
+		}
+		else if (!messageField.classList.contains('hidden')) {
+			messageField.classList.add('hidden')
+
+			messageField.querySelectorAll('input').forEach(input => {
+				input.disabled = true
+			})
+		}
 	}
 }

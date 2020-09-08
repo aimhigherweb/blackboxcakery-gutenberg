@@ -9,6 +9,7 @@ function aimhigher_product_add_on() {
         global $product;
         $attributes = $product->get_attributes();
         $att_keys = array_keys($attributes);
+        $custom_add_gluten_free_hidden = 'hidden';
 
         foreach ($att_keys as $att):
             $terms = get_terms( array(
@@ -28,6 +29,10 @@ function aimhigher_product_add_on() {
 
                 if($term->slug == $selected_option) {
                     $selected = 'checked';
+
+                    if($att == 'pa_flavours' && $term->gluten_free == 'true') {
+                        $custom_add_gluten_free_hidden = '';
+                    }
                 }
             ?>
                 <input 
@@ -46,7 +51,7 @@ function aimhigher_product_add_on() {
                     for="<?php echo $id ?>"
                     style="background-image: url(<?php echo $term->image['sizes']['thumbnail']; ?>)"
                 >
-                    <?php echo $term->name; ?>
+                    <span><?php echo $term->name; ?></span>
                 </label>
                     
             <?php endforeach;
@@ -61,6 +66,7 @@ function aimhigher_product_add_on() {
         $custom_theme_message = isset( $_POST['custom_theme_message'] ) ? sanitize_text_field( $_POST['custom_theme_message'] ) : '';
         $custom_theme_message_set = isset( $_POST['custom_theme_message'] ) ? 'filled' : '';
         $custom_theme_message_hidden = isset( $_POST['pa_theme'] ) == 'message' ? '' : 'hidden';
+        $custom_theme_message_disabled = isset( $_POST['pa_theme'] ) == 'message' ? '' : 'disabled';
     ?>
 
         <fieldset class="message hidden <?php echo $custom_theme_message_set . ' ' . $custom_theme_message_hidden; ?>">
@@ -69,7 +75,8 @@ function aimhigher_product_add_on() {
                 type="text" 
                 id="custom_theme_message" 
                 name="custom_theme_message" 
-                value="<?php echo $custom_theme_message; ?> "
+                value="<?php echo $custom_theme_message; ?>"
+                <?php echo $custom_theme_message_disabled; ?>
             />
         </fieldset>
 
@@ -79,6 +86,7 @@ function aimhigher_product_add_on() {
         $custom_add_gluten_free_yes = '';
         $custom_add_gluten_free_no = 'checked';
         $custom_add_gluten_free_set = '';
+        $custom_add_gluten_free_disabled = $custom_add_gluten_free_hidden == 'hidden' ? 'disabled' : '';
         
         if(isset( $_POST['custom_add_gluten_free'])) {
             $custom_add_gluten_free_set = 'filled';
@@ -89,7 +97,7 @@ function aimhigher_product_add_on() {
             }
         }
     ?>
-        <fieldset class="<?php echo $custom_add_gluten_free_set; ?> gluten">
+        <fieldset class="<?php echo $custom_add_gluten_free_set . ' ' . $custom_add_gluten_free_hidden; ?> gluten">
             <div>
                 <legend>Gluten Free?</legend>
                 <input 
@@ -98,6 +106,7 @@ function aimhigher_product_add_on() {
                     value="custom_add_gluten_free_yes" 
                     name="custom_add_gluten_free" 
                     <?php echo $custom_add_gluten_free_yes; ?> 
+                    <?php echo $custom_theme_message_disabled; ?>
                 />
                 <label for="custom_add_gluten_free_yes">Yes</label>
                 <input 
@@ -106,6 +115,7 @@ function aimhigher_product_add_on() {
                     value="custom_add_gluten_free_no" 
                     name="custom_add_gluten_free" 
                     <?php echo $custom_add_gluten_free_no; ?> 
+                    <?php echo $custom_theme_message_disabled; ?>
                 />
                 <label for="custom_add_gluten_free_yes">No</label>
             </div>

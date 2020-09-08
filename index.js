@@ -1,3 +1,3 @@
-import OrderForm from './src/blocks/order_form'
+import Testimonials from './src/blocks/testimonials'
 
-OrderForm()
+Testimonials()
