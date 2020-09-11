@@ -15,10 +15,10 @@ function aimhigher_product_add_on() {
             $terms = get_terms( array(
                 'taxonomy' => $att
             ) );
-            $selected_option = $_POST[$att];
+            $selected_option = str_replace("+", " ", $_POST[$att]);;
             $selected_field = isset( $_POST[$att]) ? 'filled' : '';
 
-            echo '<fieldset class="' . $att . ' ' . $selected_field . '"><div><legend>' . wc_attribute_label($att) . '</legend>';
+            echo '<fieldset class="' . $att . ' ' . $selected_field . '"><div><legend required>' . wc_attribute_label($att) . '</legend>';
 
             foreach ($terms as $term):
                 $id = $att . '_' . $term->term_taxonomy_id;
@@ -27,7 +27,7 @@ function aimhigher_product_add_on() {
                 $term->gluten_free = get_field('gluten_free', $id) ? 'true' : 'false';
                 $selected = '';
 
-                if($term->slug == $selected_option) {
+                if($term->name == $selected_option) {
                     $selected = 'checked';
 
                     if($att == 'pa_flavours' && $term->gluten_free == 'true') {
@@ -65,18 +65,20 @@ function aimhigher_product_add_on() {
     // Message - custom_theme_message
         $custom_theme_message = isset( $_POST['custom_theme_message'] ) ? sanitize_text_field( $_POST['custom_theme_message'] ) : '';
         $custom_theme_message_set = isset( $_POST['custom_theme_message'] ) ? 'filled' : '';
-        $custom_theme_message_hidden = isset( $_POST['pa_theme'] ) == 'message' ? '' : 'hidden';
-        $custom_theme_message_disabled = isset( $_POST['pa_theme'] ) == 'message' ? '' : 'disabled';
+        $custom_theme_message_hidden = $_POST['pa_decorations'] == 'Message' ? '' : 'hidden';
+        $custom_theme_message_disabled = $custom_theme_message_hidden == 'hidden' ? 'disabled' : '';
+        $custom_theme_message_required = $custom_theme_message_disabled == 'disabled' ? '' : 'required';
     ?>
 
-        <fieldset class="message hidden <?php echo $custom_theme_message_set . ' ' . $custom_theme_message_hidden; ?>">
-            <label for="custom_theme_message">What message would you like on the cake?</label>
+        <fieldset class="message <?php echo $custom_theme_message_set . ' ' . $custom_theme_message_hidden; ?>">
+            <label for="custom_theme_message" required>What message would you like on the cake?</label>
             <input 
                 type="text" 
                 id="custom_theme_message" 
                 name="custom_theme_message" 
                 value="<?php echo $custom_theme_message; ?>"
                 <?php echo $custom_theme_message_disabled; ?>
+                <?php echo $custom_theme_message_required; ?>
             />
         </fieldset>
 
@@ -106,7 +108,7 @@ function aimhigher_product_add_on() {
                     value="custom_add_gluten_free_yes" 
                     name="custom_add_gluten_free" 
                     <?php echo $custom_add_gluten_free_yes; ?> 
-                    <?php echo $custom_theme_message_disabled; ?>
+                    <?php echo $custom_add_gluten_free_disabled; ?>
                 />
                 <label for="custom_add_gluten_free_yes">Yes</label>
                 <input 
@@ -115,7 +117,7 @@ function aimhigher_product_add_on() {
                     value="custom_add_gluten_free_no" 
                     name="custom_add_gluten_free" 
                     <?php echo $custom_add_gluten_free_no; ?> 
-                    <?php echo $custom_theme_message_disabled; ?>
+                    <?php echo $custom_add_gluten_free_disabled; ?>
                 />
                 <label for="custom_add_gluten_free_yes">No</label>
             </div>
@@ -167,7 +169,7 @@ function aimhigher_product_add_on() {
             id="custom_add_colour" 
             name="custom_add_colour"
             value="<?php echo $custom_add_colour; ?> "
-            filled"<?php echo $custom_add_colour_set; ?>"
+            class="<?php echo $custom_add_colour_set; ?>""
         />
     
     <?php
@@ -200,12 +202,12 @@ function aimhigher_product_add_on_validation( $passed, $product_id, $qty ){
       wc_add_notice( 'You need to select what flavour of cake you want', 'error' );
       $passed = false;
    }
-   if( isset( $_POST['pa_theme'] ) == '' ) {
-        wc_add_notice( 'You need to select what theme you want your cake to be decorated with', 'error' );
+   if( isset( $_POST['pa_decorations'] ) == '' ) {
+        wc_add_notice( 'You need to select what decorations you want on your cake', 'error' );
         $passed = false;
     }
-    if( isset( $_POST['pa_theme'] ) == 'message'  && isset( $_POST['custom_theme_message']) == '') {
-        wc_add_notice( 'You need to let us know what message you want on the cake', 'error' );
+    if($_POST['pa_decorations'] == 'Message'  && isset( $_POST['custom_theme_message']) == '') {
+        wc_add_notice( 'You need to let us know what message you want on the cake ', 'error' );
         $passed = false;
     }
    return $passed;
@@ -222,9 +224,9 @@ function aimhigher_product_add_on_cart_item_data( $cart_item, $product_id ){
         $cart_item['pa_flavours'] = $_POST['pa_flavours'];
     }
     
-    // Theme - pa_theme
-    if( isset( $_POST['pa_theme'] ) ) {
-        $cart_item['pa_theme'] = $_POST['pa_theme'];
+    // Theme - pa_decorations
+    if( isset( $_POST['pa_decorations'] ) ) {
+        $cart_item['pa_decorations'] = $_POST['pa_decorations'];
     }
     
     // Message - custom_theme_message
@@ -276,11 +278,11 @@ function aimhigher_product_add_on_display_cart( $data, $cart_item ) {
         );
     }
     
-    // Theme - pa_theme
-    if ( isset( $cart_item['pa_theme'] ) ){
+    // Theme - pa_decorations
+    if ( isset( $cart_item['pa_decorations'] ) ){
         $data[] = array(
             'name' => 'Theme',
-            'value' => $cart_item['pa_theme']
+            'value' => $cart_item['pa_decorations']
         );
     }
 
@@ -347,9 +349,9 @@ function aimhigher_product_add_on_order_item_meta( $item_id, $values ) {
         wc_add_order_item_meta( $item_id, 'Flavour', $values['pa_flavours'], true );
     }
     
-    // Theme - pa_theme
-    if ( ! empty( $values['pa_theme'] ) ) {
-        wc_add_order_item_meta( $item_id, 'Theme', $values['pa_theme'], true );
+    // Theme - pa_decorations
+    if ( ! empty( $values['pa_decorations'] ) ) {
+        wc_add_order_item_meta( $item_id, 'Theme', $values['pa_decorations'], true );
     }
 
     // Message - custom_theme_message
@@ -394,9 +396,9 @@ function aimhigher_product_add_on_display_order( $cart_item, $order_item ){
         $cart_item['pa_flavours'] = $order_item['pa_flavours'];
     }
     
-    // Theme - pa_theme
-    if( isset( $order_item['pa_theme'] ) ){
-        $cart_item['pa_theme'] = $order_item['pa_theme'];
+    // Theme - pa_decorations
+    if( isset( $order_item['pa_decorations'] ) ){
+        $cart_item['pa_decorations'] = $order_item['pa_decorations'];
     }
 
     // Message - custom_theme_message
@@ -442,8 +444,8 @@ function aimhigher_product_add_on_display_emails( $fields ) {
     // Flavour - pa_flavours
     $fields['pa_flavours'] = 'Flavour';
     
-    // Theme - pa_theme
-    $fields['pa_theme'] = 'Theme';
+    // Theme - pa_decorations
+    $fields['pa_decorations'] = 'Theme';
 
     // Message - custom_theme_message
     $fields['custom_theme_message'] = 'Cake Message';

@@ -7,6 +7,8 @@
 		return preg_match("/^pa_/", $name);
 	});
 
+	$attributes = array_reverse($attributes);
+
 	$description = '';
 	$gallery = array();
 
@@ -51,7 +53,7 @@
 	<form class="cake-order" action="/shop/cake-large/" method="post">
 		<fieldset class="cake-size">
 			<div>
-				<legend>Cake Size</legend>
+				<legend required>Cake Size</legend>
 				<?php
 				foreach($cakes as $cake):
 					$id = 'cake-size_' . $cake->slug;
@@ -65,13 +67,14 @@
 						type="radio"
 						onclick="changeCakeSize({id: this.value, price: <?php echo $cake->price; ?> })"
 						data-name="<?php echo $cake->name ?>" 
-						
 					/>
 					<label for="<?php echo $id ?>"><?php echo $cake->name; ?> <small class="size">(<?php echo $size ?>)</small></label>
 
 				<? endforeach; ?>
 			</div>
 		</fieldset>
+
+		<input type="hidden" name="flavour_description" disabled />
 
 		<div class="options">
 			<?php
@@ -88,7 +91,7 @@
 
 				<fieldset class="<?php echo $slug;?>">
 					<div>
-						<legend>Choose Your <?php echo $name;?></legend>
+						<legend required>Choose Your <?php echo $name;?></legend>
 						<?php
 							foreach ($terms as $term):
 								$id = $slug . '_' . $term->term_taxonomy_id;
@@ -100,7 +103,7 @@
 								<input
 									name="<?php echo $slug ?>" 
 									id="<?php echo $id ?>" 
-									value="<?php echo $term->slug; ?>" 
+									value="<?php echo $term->name; ?>" 
 									type="radio" 
 									onclick="changeFlavour(this)"
 									data-name="<?php echo $term->name; ?>" 
@@ -125,7 +128,7 @@
 
 		<fieldset class="message hidden">
 			<div class="block">
-				<label for="custom_theme_message">What message would you like on the cake?</label>
+				<label for="custom_theme_message" required>What message would you like on the cake?</label>
 				<input type="text" id="custom_theme_message" name="custom_theme_message" disabled />
 			</div>
 		</fieldset>

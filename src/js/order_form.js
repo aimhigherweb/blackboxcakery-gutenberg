@@ -14,6 +14,15 @@ const changeOrderFields = () => {
 
 const changeFlavour = (e) => {
 	if (e.name == 'pa_flavours') {
+		// Set description field
+		const flavourDescription = document.querySelector('.cake-order input[name="flavour_description"]')
+
+		if (flavourDescription) {
+			flavourDescription.value = e.getAttribute('data-description');
+			flavourDescription.disabled = false
+		}
+
+
 		// Show/hide Gluten Free field
 		const gfField = document.querySelector('fieldset.gluten')
 		if (e.getAttribute('data-gf') == 'true') {
@@ -62,11 +71,12 @@ const changeFlavour = (e) => {
 	else if (e.name == 'pa_decorations') {
 		const messageField = document.querySelector('fieldset.message')
 
-		if (e.value == 'message') {
+		if (e.value == 'Message') {
 			messageField.classList.remove('hidden')
 
 			messageField.querySelectorAll('input').forEach(input => {
 				input.disabled = false
+				input.required = true
 			})
 		}
 		else if (!messageField.classList.contains('hidden')) {
@@ -74,6 +84,7 @@ const changeFlavour = (e) => {
 
 			messageField.querySelectorAll('input').forEach(input => {
 				input.disabled = true
+				input.required = false
 			})
 		}
 	}
